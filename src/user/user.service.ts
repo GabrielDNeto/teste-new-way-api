@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma, User } from 'generated/prisma';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -46,6 +50,36 @@ export class UserService {
 
     return this.prisma.user.create({
       data: { ...data, password: passHash },
+    });
+  }
+
+  async updateUser(params: {
+    where: Prisma.UserWhereUniqueInput;
+    data: Prisma.UserUpdateInput;
+  }): Promise<User> {
+    const { data, where } = params;
+
+    const user = await this.user(where);
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${where.id} does not exist`);
+    }
+
+    return this.prisma.user.update({
+      data,
+      where,
+    });
+  }
+
+  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+    const user = await this.user({ id: where.id });
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${where.id} does not exist`);
+    }
+
+    return this.prisma.user.delete({
+      where,
     });
   }
 }
