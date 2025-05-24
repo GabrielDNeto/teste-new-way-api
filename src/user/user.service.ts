@@ -42,7 +42,7 @@ export class UserService {
 
     if (user) {
       throw new ConflictException(
-        `User with email ${data.email} already exists`,
+        `Já existe um usuário cadastrado com o email informado`,
       );
     }
 

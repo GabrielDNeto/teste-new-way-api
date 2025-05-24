@@ -21,13 +21,13 @@ export class AuthService {
     const user = await this.userService.user({ email });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`Usuário ou senha inválidos`);
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
-      throw new UnauthorizedException('User or Password invalid');
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
 
     const payload = { sub: user.id };

@@ -6,29 +6,32 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from 'generated/prisma';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { CurrentUser } from 'src/auth/decorators/user.decorator';
 
 @Controller('users')
 export class UserController {
-  constructor(readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard)
   @Get()
   async getUsers() {
     return this.userService.users({});
   }
 
-  @UseGuards(AuthGuard)
+  @Get('me')
+  async getUserInfo(@CurrentUser('sub') userId: number) {
+    return this.userService.user({ id: userId });
+  }
+
   @Get(':id')
-  async getUser(id: string) {
+  async getUser(@Param('id') id: string) {
     return this.userService.user({ id: Number(id) });
   }
 
-  @UseGuards(AuthGuard)
+  @Public()
   @Post()
   async createUser(
     @Body() userData: { name: string; email: string; password: string },
@@ -36,7 +39,6 @@ export class UserController {
     return this.userService.createUser(userData);
   }
 
-  @UseGuards(AuthGuard)
   @Put(':id')
   async updateUser(
     @Body() userData: { name: string; email: string; password: string },
@@ -48,7 +50,6 @@ export class UserController {
     });
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: string): Promise<UserModel> {
     return this.userService.deleteUser({ id: Number(id) });
