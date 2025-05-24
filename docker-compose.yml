@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: new-way-postgres
+    environment:
+      POSTGRES_USER: gabrielneto
+      POSTGRES_PASSWORD: t0k00YATO79p
+      POSTGRES_DB: new_way_test
+    ports:
+      - "5432:5432"
