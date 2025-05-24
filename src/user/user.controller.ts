@@ -23,7 +23,7 @@ export class UserController {
 
   @Get('me')
   async getUserInfo(@CurrentUser('sub') userId: number) {
-    return this.userService.user({ id: userId });
+    return this.userService.userInfo({ id: userId });
   }
 
   @Get(':id')

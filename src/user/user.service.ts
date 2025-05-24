@@ -37,6 +37,24 @@ export class UserService {
     });
   }
 
+  async userInfo(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ): Promise<{ name: string; email: string; isAdmin: boolean } | null> {
+    const user = await this.prisma.user.findUnique({
+      where: userWhereUniqueInput,
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+
+    return {
+      name: user.name,
+      email: user.email,
+      isAdmin: user?.isAdmin,
+    };
+  }
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     const user = await this.user({ email: data.email });
 
