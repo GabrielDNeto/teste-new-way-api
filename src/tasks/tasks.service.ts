@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, Task } from 'generated/prisma';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginatedResponse } from 'src/types/pagination';
 
 @Injectable()
 export class TasksService {
@@ -34,6 +35,50 @@ export class TasksService {
         },
       },
     });
+  }
+
+  async tasksPaginated(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.TaskWhereUniqueInput;
+    where?: Prisma.TaskWhereInput;
+    orderBy?: Prisma.TaskOrderByWithRelationInput;
+    page: number;
+  }): Promise<PaginatedResponse<Task>> {
+    const { take, cursor, where, orderBy, page } = params;
+
+    const limit = take || 10;
+
+    const offset = (page - 1) * limit;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.task.findMany({
+        skip: offset,
+        take: limit,
+        cursor,
+        where,
+        orderBy,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      }),
+      this.prisma.task.count({
+        where,
+      }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        current: page,
+        total,
+      },
+    };
   }
 
   async task(

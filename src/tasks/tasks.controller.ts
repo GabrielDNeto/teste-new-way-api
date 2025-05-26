@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Task } from 'generated/prisma';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
@@ -27,6 +28,29 @@ export class TasksController {
       return this.taskService.tasks({ orderBy: { updatedAt: 'desc' } });
     }
     return this.taskService.tasks({ where: { userId } });
+  }
+
+  @Get('paginated')
+  async getTasksPaginated(
+    @CurrentUser('sub') userId: number,
+    @Query('current') current: string,
+    @Query('items') items: string,
+  ) {
+    const user = await this.userService.user({ id: Number(userId) });
+
+    if (user?.isAdmin) {
+      return this.taskService.tasksPaginated({
+        page: Number(current),
+        take: Number(items),
+        orderBy: { updatedAt: 'desc' },
+      });
+    }
+    return this.taskService.tasksPaginated({
+      page: Number(current),
+      take: Number(items),
+      orderBy: { updatedAt: 'desc' },
+      where: { userId: Number(userId) },
+    });
   }
 
   @Get(':id')
