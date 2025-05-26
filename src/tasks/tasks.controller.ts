@@ -9,7 +9,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Task } from 'generated/prisma';
+import { Task } from '@prisma/client';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { UserService } from 'src/user/user.service';
 import { TasksService } from './tasks.service';

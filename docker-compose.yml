@@ -3,8 +3,36 @@ services:
     image: postgres:latest
     container_name: new-way-postgres
     environment:
-      POSTGRES_USER: gabrielneto
-      POSTGRES_PASSWORD: t0k00YATO79p
-      POSTGRES_DB: new_way_test
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: new-way-api
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@postgres:5432/${DATABASE_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - postgres
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+
+networks:
+  app-network:
+    driver: bridge

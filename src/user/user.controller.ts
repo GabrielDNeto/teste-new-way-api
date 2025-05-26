@@ -8,7 +8,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { User as UserModel } from 'generated/prisma';
+import { User as UserModel } from '@prisma/client';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { UserService } from './user.service';
 import { Public } from 'src/auth/decorators/public.decorator';
