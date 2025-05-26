@@ -6,6 +6,7 @@ import {
 import { Prisma, User } from 'generated/prisma';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { PaginatedResponse } from 'src/types/pagination';
 
 @Injectable()
 export class UserService {
@@ -27,6 +28,40 @@ export class UserService {
       where,
       orderBy,
     });
+  }
+  async usersPaginated(params: {
+    take?: number;
+    cursor?: Prisma.UserWhereUniqueInput;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+    page: number;
+  }): Promise<PaginatedResponse<User>> {
+    const { take, cursor, where, orderBy, page } = params;
+
+    const limit = take || 10;
+
+    const offset = (page - 1) * limit;
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        skip: offset,
+        take: limit,
+        cursor,
+        where,
+        orderBy,
+      }),
+      this.prisma.user.count({
+        where,
+      }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        current: page,
+        total,
+      },
+    };
   }
 
   async user(
@@ -80,11 +115,27 @@ export class UserService {
     const user = await this.user(where);
 
     if (!user) {
-      throw new NotFoundException(`User with id ${where.id} does not exist`);
+      throw new NotFoundException(`Usuário não encontrado!`);
     }
 
     return this.prisma.user.update({
       data,
+      where,
+    });
+  }
+
+  async updateUserRole(params: {
+    where: Prisma.UserWhereUniqueInput;
+  }): Promise<User> {
+    const { where } = params;
+    const user = await this.user(where);
+
+    if (!user) {
+      throw new NotFoundException(`Usuário não encontrado!`);
+    }
+
+    return this.prisma.user.update({
+      data: { isAdmin: !user.isAdmin },
       where,
     });
   }

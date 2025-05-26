@@ -6,11 +6,12 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
-import { UserService } from './user.service';
 import { User as UserModel } from 'generated/prisma';
-import { Public } from 'src/auth/decorators/public.decorator';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
+import { UserService } from './user.service';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
@@ -18,7 +19,19 @@ export class UserController {
 
   @Get()
   async getUsers() {
-    return this.userService.users({});
+    return this.userService.users({ orderBy: { name: 'asc' } });
+  }
+
+  @Get('paginated')
+  async getUsersPaginated(
+    @Query('current') current: string,
+    @Query('items') items: string,
+  ) {
+    return this.userService.usersPaginated({
+      page: Number(current),
+      take: Number(items),
+      orderBy: { updatedAt: 'desc' },
+    });
   }
 
   @Get('me')
@@ -48,6 +61,11 @@ export class UserController {
       where: { id: Number(id) },
       data: userData,
     });
+  }
+
+  @Get('change-role/:id')
+  async updateUserRole(@Param('id') id: string) {
+    return this.userService.updateUserRole({ where: { id: Number(id) } });
   }
 
   @Delete(':id')
