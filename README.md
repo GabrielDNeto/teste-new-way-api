@@ -58,7 +58,7 @@ admin@123
 
 4. **Acesse a API:**
 
-   - A aplicação estará disponível em: [http://localhost:3001/api](http://localhost:3001)
+   - A aplicação estará disponível em: [http://localhost:3001/api](http://localhost:3001/api)
    - O banco de dados estará disponível em: `localhost:5432` (usuário: postgres, senha: postgres, banco: appdb)
 
 5. **Parar os containers:**
