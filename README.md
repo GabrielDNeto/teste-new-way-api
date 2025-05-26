@@ -14,7 +14,7 @@ App [Nest](https://github.com/nestjs/nest) para gestão de tarefas, com cadastro
 
    ```bash
    git clone https://github.com/GabrielDNeto/teste-new-way-api.git
-   cd api teste-new-way-api
+   cd teste-new-way-api
    ```
 
 2. **Configure as variáveis de ambiente:**
