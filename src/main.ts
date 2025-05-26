@@ -9,7 +9,6 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Teste New Way- API')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
