@@ -30,7 +30,6 @@ RUN npm install --production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/generated ./generated
-COPY --from=builder /app/node_modules ./node_modules
 
 ENV NODE_ENV=production
 
